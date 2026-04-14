@@ -18,3 +18,6 @@ spring:
 jwt:
   secret: nac-korea-secret-key-must-be-at-least-256bits-long-for-hs256
   expiration: 86400000
+
+
+# 주석 테스트
