@@ -14,3 +14,12 @@ logging:
   level:
     com.nackorea: INFO
     root: WARN
+  file:
+    name: /var/www/nackorea/backend/logs/nac-korea.log
+  logback:
+    rollingpolicy:
+      file-name-pattern: /var/www/nackorea/backend/logs/nackorea.%d{yyyy-MM-dd}.log
+      max-history: 2          # 2일치만 보관
+      max-file-size: 100MB    # 파일당 최대 100MB
+      total-size-cap: 200MB   # 전체 최대 200MB (2일 x 100MB)
+      clean-history-on-start: false
