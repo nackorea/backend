@@ -57,12 +57,14 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(List.of(
+                "http://nac-korea.com:8080",   // ✅ 도메인 추가
+                "https://nac-korea.com",        // ✅ HTTPS 적용 후 추가
                 "http://localhost:5173",
                 "http://localhost:3030",
                 "http://127.0.0.1:3030",
+
                 "http://3.34.153.92:8080",
-                "http://nac-korea.com:8080",   // ✅ 도메인 추가
-                "https://nac-korea.com"        // ✅ HTTPS 적용 후 추가
+                "http://ec2-3-34-153-92.ap-northeast-2.compute.amazonaws.com:8080/"
         ));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         cfg.setAllowedHeaders(List.of("*"));
