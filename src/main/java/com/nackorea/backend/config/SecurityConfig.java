@@ -60,7 +60,9 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "http://localhost:3030",
                 "http://127.0.0.1:3030",
-                "http://3.34.153.92:8080"
+                "http://3.34.153.92:8080",
+                "http://nac-korea.com:8080",   // ✅ 도메인 추가
+                "https://nac-korea.com"        // ✅ HTTPS 적용 후 추가
         ));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         cfg.setAllowedHeaders(List.of("*"));
