@@ -38,12 +38,25 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token).getPayload().getSubject();
     }
 
+//    public boolean validateToken(String token) {
+//        try {
+//            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+//            return true;
+//        } catch (JwtException | IllegalArgumentException e) {
+//            log.warn("Invalid JWT: {}", e.getMessage());
+//            return false;
+//        }
+//    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            log.warn("만료된 JWT: {}", e.getMessage());
+            throw e; // Filter에서 catch할 수 있도록 예외를 그대로 던짐
         } catch (JwtException | IllegalArgumentException e) {
-            log.warn("Invalid JWT: {}", e.getMessage());
+            log.warn("유효하지 않은 JWT: {}", e.getMessage());
             return false;
         }
     }

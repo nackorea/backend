@@ -1,5 +1,6 @@
 package com.nackorea.backend.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,5 +36,11 @@ public class GlobalExceptionHandler {
         Map<String,String> errors = e.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> handleExpiredJwt(ExpiredJwtException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("토큰이 만료되었습니다. 다시 로그인해주세요.");
     }
 }
