@@ -23,6 +23,3 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 List.of(new SimpleGrantedAuthority("ROLE_" + member.getRole().name())));
     }
 }
-
-
-// 커밋 되나
