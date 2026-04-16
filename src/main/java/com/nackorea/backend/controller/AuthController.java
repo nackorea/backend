@@ -4,14 +4,15 @@ import com.nackorea.backend.dto.*;
 import com.nackorea.backend.security.JwtTokenProvider;
 import com.nackorea.backend.security.TokenBlacklist;
 import com.nackorea.backend.service.MemberService;
+import com.nackorea.backend.service.RefreshTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -19,13 +20,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
     private final TokenBlacklist tokenBlacklist;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
     public ResponseEntity<MemberResponseDto> register(@Valid @RequestBody MemberRequestDto dto) {
@@ -36,28 +37,34 @@ public class AuthController {
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto dto) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-        String token = jwtTokenProvider.generateToken(auth.getName());
-        MemberResponseDto member = memberService.getMemberByEmail(auth.getName());
-        log.info( "이름 :  " + member.getName());
-        log.info( "이메일 :  " + member.getEmail());
-        log.info( "권한 :  " + member.getRole());
-        log.info( "token :  " + token);
-        return ResponseEntity.ok(new LoginResponseDto("Bearer", token, member));
+
+        String email = auth.getName();
+        String accessToken = jwtTokenProvider.generateToken(email);
+        String refreshToken = refreshTokenService.create(email);
+        MemberResponseDto member = memberService.getMemberByEmail(email);
+
+        log.info("로그인 - 이름: {}, 이메일: {}, 권한: {}", member.getName(), email, member.getRole());
+        return ResponseEntity.ok(new LoginResponseDto("Bearer", accessToken, refreshToken, member));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, String>> refresh(@Valid @RequestBody RefreshRequestDto dto) {
+        RefreshTokenService.RotateResult result = refreshTokenService.rotate(dto.getRefreshToken());
+        String newAccessToken = jwtTokenProvider.generateToken(result.email());
+        return ResponseEntity.ok(Map.of(
+                "accessToken", newAccessToken,
+                "refreshToken", result.newToken()
+        ));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
-        String token = resolveToken(request);
-        log.info("logout~~~");
+        String token = jwtTokenProvider.resolveToken(request);
+        log.info("로그아웃");
         if (token != null && jwtTokenProvider.validateToken(token)) {
             tokenBlacklist.add(token);
+            refreshTokenService.deleteByEmail(jwtTokenProvider.getEmailFromToken(token));
         }
         return ResponseEntity.ok(Map.of("message", "로그아웃 되었습니다."));
-    }
-
-    private String resolveToken(HttpServletRequest request) {
-        String bearer = request.getHeader("Authorization");
-        return (bearer != null && bearer.startsWith("Bearer "))
-                ? bearer.substring(7) : null;
     }
 }

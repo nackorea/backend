@@ -3,6 +3,7 @@ package com.nackorea.backend.security;
 import com.nackorea.backend.entity.Member;
 import com.nackorea.backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자 없음: " + email));
+
+        if (member.getStatus() == Member.Status.WITHDRAWN) {
+            throw new DisabledException("탈퇴한 회원입니다.");
+        }
+
         return new User(member.getEmail(), member.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + member.getRole().name())));
     }

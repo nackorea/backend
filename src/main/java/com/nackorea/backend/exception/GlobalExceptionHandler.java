@@ -4,6 +4,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,12 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", "이메일 또는 비밀번호가 올바르지 않습니다."));
     }
 
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<Map<String,String>> handleDisabled(DisabledException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("message", "탈퇴한 회원입니다."));
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String,String>> handleAccessDenied(AccessDeniedException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -39,8 +46,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<?> handleExpiredJwt(ExpiredJwtException e) {
+    public ResponseEntity<Map<String,String>> handleExpiredJwt(ExpiredJwtException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("토큰이 만료되었습니다. 다시 로그인해주세요.");
+                .body(Map.of("message", "토큰이 만료되었습니다. 다시 로그인해주세요."));
     }
 }

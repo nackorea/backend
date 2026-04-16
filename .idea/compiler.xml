@@ -10,6 +10,12 @@
         <module name="backend.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="21" />
+    <bytecodeTargetLevel target="19" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters" />
+  </component>
+  <component name="TypeScriptCompiler">
+    <option name="memoryLimit" value="4096" />
   </component>
 </project>
