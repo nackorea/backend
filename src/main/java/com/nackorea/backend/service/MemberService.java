@@ -2,6 +2,7 @@ package com.nackorea.backend.service;
 
 import com.nackorea.backend.dto.MemberRequestDto;
 import com.nackorea.backend.dto.MemberResponseDto;
+import com.nackorea.backend.dto.MemberUpdateDto;
 import com.nackorea.backend.entity.Member;
 import com.nackorea.backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,16 @@ public class MemberService {
         member.setPhone(dto.getPhone());
         if (dto.getPassword() != null && !dto.getPassword().isBlank())
             member.setPassword(passwordEncoder.encode(dto.getPassword()));
+        return MemberResponseDto.from(member);
+    }
+
+    @Transactional
+    public MemberResponseDto updateMe(String email, MemberUpdateDto dto) {
+        Member member = memberRepository.findByEmail(email)
+                .filter(m -> m.getStatus() == Member.Status.ACTIVE)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        member.setPhone(dto.getPhone());
+        member.setPassword(passwordEncoder.encode(dto.getPassword()));
         return MemberResponseDto.from(member);
     }
 

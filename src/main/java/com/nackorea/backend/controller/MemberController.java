@@ -4,6 +4,7 @@ import com.nackorea.backend.dto.*;
 import com.nackorea.backend.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
@@ -31,6 +33,13 @@ public class MemberController {
     @GetMapping("/me")
     public ResponseEntity<MemberResponseDto> getMe(@AuthenticationPrincipal UserDetails ud) {
         return ResponseEntity.ok(memberService.getMemberByEmail(ud.getUsername()));
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<MemberResponseDto> updateMe(@AuthenticationPrincipal UserDetails ud,
+                                                      @Valid @RequestBody MemberUpdateDto dto) {
+        log.info("me ~~~~");
+        return ResponseEntity.ok(memberService.updateMe(ud.getUsername(), dto));
     }
 
     @PutMapping("/{id}")
