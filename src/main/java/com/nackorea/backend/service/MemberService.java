@@ -75,6 +75,14 @@ public class MemberService {
         findActiveById(id).setStatus(Member.Status.WITHDRAWN);
     }
 
+    @Transactional
+    public void withdrawByEmail(String email) {
+        memberRepository.findByEmail(email)
+                .filter(m -> m.getStatus() == Member.Status.ACTIVE)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."))
+                .setStatus(Member.Status.WITHDRAWN);
+    }
+
     private Member findActiveById(Long id) {
         return memberRepository.findById(id)
                 .filter(m -> m.getStatus() == Member.Status.ACTIVE)

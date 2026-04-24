@@ -38,6 +38,10 @@ public class SecurityConfig {
                     .requestMatchers("/api/health/**").permitAll()
                     .requestMatchers("/api/ping").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/members").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/members/me").authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/api/members/{id}").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/members/me").authenticated()
+                    .requestMatchers(HttpMethod.DELETE, "/api/members/{id}").hasRole("ADMIN")
 
                 .anyRequest().authenticated()
             )

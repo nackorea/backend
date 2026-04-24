@@ -8,6 +8,9 @@ spring:
   jpa:
     show-sql: true
 
+jwt:
+  secret: dev-local-secret-key-for-development-only-not-used-in-production
+
 logging:
   level:
     com.nackorea: DEBUG

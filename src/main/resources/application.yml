@@ -15,7 +15,7 @@ spring:
         format_sql: true
 
 jwt:
-  secret: nac-korea-secret-key-must-be-at-least-256bits-long-for-hs256
+  secret: ${JWT_SECRET}
 #  expiration: 60000        # 1분
 #  refresh-expiration: 60000  # 1분
   expiration: 86400000        # 1일

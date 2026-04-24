@@ -48,6 +48,12 @@ public class MemberController {
         return ResponseEntity.ok(memberService.updateMember(id, dto));
     }
 
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> withdrawMe(@AuthenticationPrincipal UserDetails ud) {
+        memberService.withdrawByEmail(ud.getUsername());
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> withdraw(@PathVariable Long id) {
         memberService.withdraw(id);
