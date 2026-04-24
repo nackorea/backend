@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -66,7 +67,9 @@ public class MemberService {
                 .filter(m -> m.getStatus() == Member.Status.ACTIVE)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         member.setPhone(dto.getPhone());
-        member.setPassword(passwordEncoder.encode(dto.getPassword()));
+        if (StringUtils.hasText(dto.getPassword())) {
+            member.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
         return MemberResponseDto.from(member);
     }
 
